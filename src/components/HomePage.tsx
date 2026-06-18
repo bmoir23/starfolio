@@ -9,7 +9,8 @@ import HackathonsSection from "@/components/section/hackathons-section";
 import PhotosSection from "@/components/section/photos-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
-import { ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowUpRight, FileDown } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -73,9 +74,11 @@ const sectionComponents: Record<string, React.ReactNode> = {
                     <div className="font-sans text-sm text-muted-foreground">{education.degree}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground text-right flex-none">
-                  <span>{education.start} - {education.end}</span>
-                </div>
+                {education.start && (
+                  <div className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground text-right flex-none">
+                    <span>{education.end ? `${education.start} - ${education.end}` : education.start}</span>
+                  </div>
+                )}
               </a>
             </BlurFade>
           ))}
@@ -149,6 +152,19 @@ export default function HomePage() {
                 delay={BLUR_FADE_DELAY}
                 text={DATA.description}
               />
+              <BlurFade delay={BLUR_FADE_DELAY * 2}>
+                <Button asChild size="sm" className="mt-2 w-fit gap-2">
+                  <a
+                    href={DATA.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Download Brian Moir's résumé"
+                  >
+                    <FileDown className="size-4" />
+                    Download Résumé
+                  </a>
+                </Button>
+              </BlurFade>
             </div>
             <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
               <Avatar className="size-24 md:size-32 border rounded-full shadow-lg ring-4 ring-muted">
