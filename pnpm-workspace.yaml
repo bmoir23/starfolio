@@ -1,4 +1,12 @@
+# Approves native dependency build scripts so `pnpm install` does not abort.
+# pnpm v10 (used by Cloudflare's build image) reads `onlyBuiltDependencies`.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
+
+# pnpm v11+ replaced the list above with the `allowBuilds` map.
 allowBuilds:
-  esbuild: set this to true or false
-  sharp: set this to true or false
-  workerd: set this to true or false
+  esbuild: true
+  sharp: true
+  workerd: true
