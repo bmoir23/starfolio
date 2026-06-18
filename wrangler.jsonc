@@ -7,6 +7,9 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"analytics_engine_datasets": [
+    { "binding": "ANALYTICS_ENGINE", "dataset": "dev_portfolio" }
+  ],
 	"observability": {
 		"enabled": true
 	}
