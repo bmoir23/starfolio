@@ -158,9 +158,9 @@ export default function HomePage() {
                     href={DATA.resumeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Download ${DATA.name}'s résumé`}
+                    aria-label="Download My Resume / CV"
                   >
-                    Résumé
+                    Download My Resume / CV
                   </a>
                 </RainbowButton>
               </BlurFade>
