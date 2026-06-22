@@ -159,5 +159,14 @@ const { baseFontSize } = CONFIG.typography;
 
     <!-- Navbar: ThemeProvider + TooltipProvider + Navbar all in one React island -->
     <NavbarIsland client:load />
+
+    <!-- Cloudflare Web Analytics -->
+    <script
+      is:inline
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "2efa1e4799064c0d9501fc870ad53423"}'
+    ></script>
+    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>

@@ -6,6 +6,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* GlowButton (shiny-button-1) animations */
+@keyframes speen {
+  0% { transform: rotate(10deg); }
+  50% { transform: rotate(190deg); }
+  100% { transform: rotate(370deg); }
+}
+@keyframes woah {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.75); }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
