@@ -9,7 +9,7 @@ import HackathonsSection from "@/components/section/hackathons-section";
 import PhotosSection from "@/components/section/photos-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
-import { GlowButton } from "@/components/ui/shiny-button-1";
+import { ButtonUi } from "@/components/ui/button-ui";
 import { ArrowUpRight } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
@@ -153,7 +153,7 @@ export default function HomePage() {
                 text={DATA.description}
               />
               <BlurFade delay={BLUR_FADE_DELAY * 2}>
-                <GlowButton
+                <ButtonUi
                   href={DATA.resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -161,7 +161,7 @@ export default function HomePage() {
                   className="mt-2"
                 >
                   Résumé
-                </GlowButton>
+                </ButtonUi>
               </BlurFade>
             </div>
             <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
