@@ -5,16 +5,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Markdown from "react-markdown";
 import ContactSection from "@/components/section/contact-section";
+import GithubActivitySection from "@/components/section/github-activity-section";
 import HackathonsSection from "@/components/section/hackathons-section";
 import PhotosSection from "@/components/section/photos-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
+import BlogSection from "@/components/section/blog-section";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { ArrowUpRight } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
 const sectionComponents: Record<string, React.ReactNode> = {
+  githubActivity: (
+    <section id="github-activity">
+      <BlurFade delay={BLUR_FADE_DELAY * 2.5}>
+        <GithubActivitySection />
+      </BlurFade>
+    </section>
+  ),
   about: (
     <section id="about">
       <div className="flex min-h-0 flex-col gap-y-4">
@@ -109,6 +118,13 @@ const sectionComponents: Record<string, React.ReactNode> = {
     <section id="projects">
       <BlurFade delay={BLUR_FADE_DELAY * 11}>
         <ProjectsSection />
+      </BlurFade>
+    </section>
+  ),
+  blog: (
+    <section id="blog">
+      <BlurFade delay={BLUR_FADE_DELAY * 14}>
+        <BlogSection />
       </BlurFade>
     </section>
   ),
