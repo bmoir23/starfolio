@@ -44,6 +44,13 @@ export default function ContactSocials() {
             aria-label={s.name}
             style={hoverVars(s)}
             className={ICON_CLASSES}
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (window as any).posthog?.capture("social link clicked", {
+                platform: s.name,
+                url: s.url,
+              });
+            }}
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-card transition-colors group-hover:border-transparent group-hover:bg-white/10">
               <Icon className="size-4" />

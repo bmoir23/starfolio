@@ -27,10 +27,21 @@ export default function ContactForm() {
     setStatus("submitting");
     setError(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).posthog?.capture("contact form submitted", {
+      has_subject: Boolean(payload.subject),
+      session_id: (window as any).posthog?.get_session_id?.() ?? undefined,
+    });
+
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sessionId = (window as any).posthog?.get_session_id?.() ?? "";
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-PostHog-Session-Id": sessionId,
+        },
         body: JSON.stringify(payload),
       });
       const body = (await res.json().catch(() => ({}))) as {

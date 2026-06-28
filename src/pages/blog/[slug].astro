@@ -4,6 +4,7 @@ import { getPostBySlug, isSanityConfigured } from "@/lib/sanity";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { DATA } from "@/data/resume";
 import BlogPostBody from "@/components/blog-post-body";
+import { createPosthogClient } from "@/lib/posthog";
 
 export const prerender = false;
 
@@ -34,6 +35,28 @@ const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
 const readingTime =
   post.readingTime ??
   Math.max(1, Math.round(post.bodyMarkdown.trim().split(/\s+/).length / 200));
+
+const posthog = createPosthogClient(Astro.locals);
+const viewerIp =
+  Astro.request.headers.get("cf-connecting-ip") ?? Astro.clientAddress ?? "anonymous";
+try {
+  await posthog.captureImmediate({
+    distinctId: viewerIp,
+    event: 'blog post viewed',
+    properties: {
+      post_slug: slug,
+      post_title: post.title,
+      post_author: post.author?.name ?? null,
+      reading_time_minutes: readingTime,
+      tags: post.tags ?? [],
+      $current_url: Astro.request.url,
+    },
+  });
+} catch {
+  // Non-fatal — don't block page render if analytics fails
+} finally {
+  await posthog.shutdown();
+}
 ---
 
 <Layout title={post.title} description={post.excerpt} image={post.coverImageUrl}>

@@ -71,13 +71,4 @@ export const postSchema = defineType({
   },
 });
 
-export const authorSchema = defineType({
-  name: "author",
-  title: "Author",
-  type: "document",
-  fields: [
-    defineField({ name: "name", title: "Name", type: "string" }),
-    defineField({ name: "avatar", title: "Avatar", type: "image" }),
-  ],
-  preview: { select: { title: "name", media: "avatar" } },
-});
+export default postSchema;

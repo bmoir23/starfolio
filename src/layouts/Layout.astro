@@ -5,6 +5,7 @@ import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
 import ChatbotWidget from "@/components/ChatbotWidget";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import PostHog from "@/components/posthog.astro";
 
 interface Props {
   title?: string;
@@ -137,6 +138,9 @@ const { baseFontSize } = CONFIG.typography;
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+
+    <!-- PostHog client-side analytics -->
+    <PostHog />
   </head>
   <body class="min-h-screen bg-background font-sans antialiased relative">
     <!-- FlickeringGrid header background - matches template exactly -->

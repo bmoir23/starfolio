@@ -175,6 +175,12 @@ export default function HomePage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Download My Resume / CV"
+                    onClick={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (window as any).posthog?.capture("resume downloaded", {
+                        resume_url: DATA.resumeUrl,
+                      });
+                    }}
                   >
                     Download My Resume / CV
                   </a>

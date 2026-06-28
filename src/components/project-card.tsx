@@ -102,6 +102,15 @@ interface Props {
   className?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function captureProjectClick(title: string, href: string | undefined, linkType: string) {
+  (window as any).posthog?.capture("project link clicked", {
+    project_title: title,
+    project_url: href ?? null,
+    link_type: linkType,
+  });
+}
+
 export function ProjectCard({
   title,
   href,
@@ -126,6 +135,7 @@ export function ProjectCard({
           target="_blank"
           rel="noopener noreferrer"
           className="block"
+          onClick={() => captureProjectClick(title, href, "image")}
         >
           {video ? (
             <video
@@ -150,7 +160,10 @@ export function ProjectCard({
                 key={idx}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  captureProjectClick(title, link.href, link.type);
+                }}
               >
                 <Badge
                   className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
@@ -176,6 +189,7 @@ export function ProjectCard({
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             aria-label={`Open ${title}`}
+            onClick={() => captureProjectClick(title, href, "title")}
           >
             <ArrowUpRight className="h-4 w-4" aria-hidden />
           </a>

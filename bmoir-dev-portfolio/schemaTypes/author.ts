@@ -20,8 +20,8 @@ export default defineType({
       },
     }),
     defineField({
-      name: 'image',
-      title: 'Image',
+      name: 'avatar',
+      title: 'Avatar',
       type: 'image',
       options: {
         hotspot: true,
@@ -44,7 +44,7 @@ export default defineType({
   preview: {
     select: {
       title: 'name',
-      media: 'image',
+      media: 'avatar',
     },
   },
 })
