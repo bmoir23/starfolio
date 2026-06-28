@@ -1,8 +1,8 @@
 {
   "name": "starfolio",
   "type": "module",
-  "description": "Starfolio - Create a personal or professional portfolio site just from a single config file. Built with Astro.",
-  "author": "websiterating",
+  "description": "Astro + Cloudflare Workers + Shadcn/ui / Magic UI / 21st Dev Agentic AI portfolio. Deployed to cloudflare Workers and CMS using Sanity plus d1 and hyperdrive. USing Liinkd Agents for AI receptionist chatbot and assistant ( plus other ai capabilities). Inference on cloudflare workers using AI Gateway.",
+  "author": "Brian Moir",
   "version": "0.0.1",
   "engines": {
     "node": ">=22.12.0"
@@ -63,5 +63,11 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "typescript": "^6.0.3"
+  },
+  "allowScripts": {
+    "esbuild@0.27.7": true,
+    "esbuild@0.28.1": true,
+    "sharp@0.34.5": true,
+    "workerd@1.20260625.1": true
   }
 }
