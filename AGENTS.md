@@ -1,6 +1,6 @@
 ## Learned User Preferences
 
-- Use `pnpm` as the package manager (e.g. `pnpm dev`); a `pnpm-workspace.yaml` is present.
+- Use `pnpm` as the package manager (e.g. `pnpm dev`). This is a single-package repo with NO `pnpm-workspace.yaml` (a malformed one previously broke Cloudflare's `pnpm install --frozen-lockfile` with "packages field missing or empty"). Do not commit `package-lock.json`; pnpm is the only lockfile. When adding a dependency, run `pnpm add` so `pnpm-lock.yaml` stays in sync for the frozen install on Cloudflare.
 - New shadcn-style React components should be dropped into `src/components/ui/` so the `@/lib/utils` `cn` import resolves.
 - Use `lucide-react` for icons when a component needs SVG/logo glyphs.
 - Async UI sections should include a loading skeleton and an empty/error state, not just a flash of the empty state.

@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { DATA } from "@/data/resume";
 import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
+import ChatbotWidget from "@/components/ChatbotWidget";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 
 interface Props {
@@ -159,6 +160,9 @@ const { baseFontSize } = CONFIG.typography;
 
     <!-- Navbar: ThemeProvider + TooltipProvider + Navbar all in one React island -->
     <NavbarIsland client:load />
+
+    <!-- Chatbot shell (placeholder UI; n8n logic connected later) -->
+    <ChatbotWidget client:idle />
 
     <!-- Cloudflare Web Analytics -->
     <script

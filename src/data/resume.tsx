@@ -10,6 +10,7 @@ import {
   Server,
   BrainCircuit,
   BookOpen,
+  Mail,
 } from "lucide-react";
 import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
@@ -106,6 +107,15 @@ export const DATA = {
       hoverFg: "#ffffff",
       hoverBgDark: "#f43f5e",
       hoverFgDark: "#ffffff",
+    },
+    {
+      href: "/contact",
+      icon: Mail,
+      label: "Contact",
+      hoverBg: "#10b981",
+      hoverFg: "#ffffff",
+      hoverBgDark: "#34d399",
+      hoverFgDark: "#052e1f",
     },
   ],
   contact: {

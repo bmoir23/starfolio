@@ -43,7 +43,7 @@ export default function Navbar() {
       <Dock className="z-50 pointer-events-auto relative h-14 p-2 w-fit mx-auto flex gap-2 border bg-card/90 backdrop-blur-3xl shadow-[0_0_10px_3px] shadow-primary/5">
         {DATA.navbar.map((item) => {
           const isExternal = item.href.startsWith("http");
-          const isBlog = item.href === "/blog";
+          const hasHover = Boolean((item as HoverStyle).hoverBg);
           const hover = hoverStyleVars(item as HoverStyle);
           return (
             <Tooltip key={item.href}>
@@ -60,7 +60,7 @@ export default function Navbar() {
                     className={cn(
                       "rounded-2xl cursor-pointer size-full bg-background p-0 text-foreground backdrop-blur-3xl border border-border",
                       // Apply brand hover only when hover vars are present.
-                      isBlog ? HOVER_ICON_CLASSES : "hover:bg-muted hover:text-foreground",
+                      hasHover ? HOVER_ICON_CLASSES : "hover:bg-muted hover:text-foreground",
                     )}
                   >
                     <item.icon className="size-full rounded-sm overflow-hidden object-contain" />
