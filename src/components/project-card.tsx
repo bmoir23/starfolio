@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { Badge } from "@/components/ui/badge";
+import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
@@ -88,17 +89,14 @@ function ProjectGradient({ title }: { title: string }) {
 
 interface Props {
   title: string;
-  href?: string;
+  slug: string;
   description: string;
   dates: string;
   tags: readonly string[];
   image?: string;
   video?: string;
-  links?: readonly {
-    icon: React.ReactNode;
-    type: string;
-    href: string;
-  }[];
+  githubUrl?: string;
+  websiteUrl?: string;
   className?: string;
 }
 
@@ -113,15 +111,33 @@ function captureProjectClick(title: string, href: string | undefined, linkType: 
 
 export function ProjectCard({
   title,
-  href,
+  slug,
   description,
   dates,
   tags,
   image,
   video,
-  links,
+  githubUrl,
+  websiteUrl,
   className,
 }: Props) {
+  const detailHref = `/projects/${slug}`;
+  const externalLinks: { icon: React.ReactNode; type: string; href: string }[] = [];
+  if (githubUrl) {
+    externalLinks.push({
+      icon: <Icons.github className="size-3" />,
+      type: "GitHub",
+      href: githubUrl,
+    });
+  }
+  if (websiteUrl) {
+    externalLinks.push({
+      icon: <Icons.globe className="size-3" />,
+      type: "Website",
+      href: websiteUrl,
+    });
+  }
+
   return (
     <div
       className={cn(
@@ -131,11 +147,9 @@ export function ProjectCard({
     >
       <div className="relative shrink-0">
         <a
-          href={href || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={detailHref}
           className="block"
-          onClick={() => captureProjectClick(title, href, "image")}
+          onClick={() => captureProjectClick(title, detailHref, "image")}
         >
           {video ? (
             <video
@@ -152,9 +166,9 @@ export function ProjectCard({
             <ProjectGradient title={title} />
           )}
         </a>
-        {links && links.length > 0 && (
+        {externalLinks.length > 0 && (
           <div className="absolute top-2 right-2 flex flex-wrap gap-2">
-            {links.map((link, idx) => (
+            {externalLinks.map((link, idx) => (
               <a
                 href={link.href}
                 key={idx}
@@ -184,12 +198,10 @@ export function ProjectCard({
             <time className="text-xs text-muted-foreground">{dates}</time>
           </div>
           <a
-            href={href || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={detailHref}
             className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             aria-label={`Open ${title}`}
-            onClick={() => captureProjectClick(title, href, "title")}
+            onClick={() => captureProjectClick(title, detailHref, "title")}
           >
             <ArrowUpRight className="h-4 w-4" aria-hidden />
           </a>

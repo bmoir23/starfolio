@@ -55,3 +55,58 @@ Required fields: `title`, `slug`, `publishedAt`. Recommended: `excerpt`,
 
 If `SANITY_PROJECT_ID` is not set, the blog pages render an empty state with a
 "Connect Sanity" prompt instead of crashing — handy for first deploy.
+
+---
+
+# Projects (Sanity CMS)
+
+Projects are managed in the same Sanity project as the blog. The homepage grid,
+the `/projects` list, and each `/projects/[slug]` detail page fetch them at
+request time.
+
+## 1. Register the schema
+
+The schema for the `project` document lives in
+[`sanity/schemas/project.ts`](./sanity/schemas/project.ts). Register it in your
+studio's `sanity.config.ts` alongside the post schema:
+
+```ts
+import { postSchema, authorSchema } from "./schemas/post";
+import { projectSchema } from "./schemas/project";
+
+schemaTypes: [postSchema, authorSchema, projectSchema];
+```
+
+Fields: `title`, `slug` (required); `excerpt`, `overview` (Markdown), `dates`,
+`active`, `coverImage`, `technologies` (Tech Stack), `skills` (Skills Used),
+`architectureMarkdown` (Architecture & Design Decisions), `githubUrl`,
+`websiteUrl`, `order`, `publishedAt`.
+
+## 2. Seed the starter content (optional)
+
+Four starter projects are provided in
+[`sanity/seed/projects.ndjson`](./sanity/seed/projects.ndjson). Import them into
+your dataset from your studio folder:
+
+```bash
+sanity dataset import /path/to/starfolio-1/sanity/seed/projects.ndjson production
+```
+
+Then edit each document in the Studio — in particular fill in the
+**Architecture & Design Decisions** body and any project-specific
+`githubUrl` / `websiteUrl`. (The SynccOS doc is pre-wired to
+`https://github.com/bmoir23/syncc-liinkd-frontend`.)
+
+## 3. What gets rendered
+
+- The homepage **Things I've architected & shipped** section fetches projects
+  from `/api/projects.json` and renders them as cards.
+- `/projects` — full list of projects as cards.
+- `/projects/[slug]` — detail page with Overview, Tech Stack, Skills Used, and
+  Architecture & Design Decisions sections, each in a card matching the contact
+  page styling.
+- Each card links internally to its detail page; the GitHub and Website badges
+  open the external URLs in a new tab.
+
+If `SANITY_PROJECT_ID` is not set, the projects surfaces render an empty state
+instead of crashing.

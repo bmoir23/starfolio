@@ -51,6 +51,26 @@ export type BlogPostFull = BlogPostSummary & {
   author?: { name?: string; avatarUrl?: string };
 };
 
+export type ProjectSummary = {
+  _id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  dates: string;
+  active: boolean;
+  coverImageUrl?: string;
+  technologies: string[];
+  githubUrl?: string;
+  websiteUrl?: string;
+  order?: number;
+};
+
+export type ProjectFull = ProjectSummary & {
+  overview: string;
+  skills: string[];
+  architectureMarkdown: string;
+};
+
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
 const SUMMARY_PROJECTION = `
@@ -124,4 +144,81 @@ export async function getAllSlugs(): Promise<string[]> {
 
 export function isSanityConfigured(): boolean {
   return Boolean(process.env.SANITY_PROJECT_ID);
+}
+
+// ─── Projects ───────────────────────────────────────────────────────────────
+
+const PROJECT_SUMMARY_PROJECTION = `
+  _id,
+  "slug": slug.current,
+  title,
+  excerpt,
+  dates,
+  active,
+  "coverImageUrl": coverImage.asset->url,
+  "technologies": technologies[],
+  githubUrl,
+  websiteUrl,
+  order
+`;
+
+const PROJECTS_LIST_QUERY = `
+  *[_type == "project" && defined(slug.current) && !(_id in path("drafts.**"))]
+  | order(order asc, publishedAt desc)[0...50]
+  { ${PROJECT_SUMMARY_PROJECTION} }
+`;
+
+const PROJECT_BY_SLUG_QUERY = `
+  *[_type == "project" && slug.current == $slug && !(_id in path("drafts.**"))][0]
+  {
+    ${PROJECT_SUMMARY_PROJECTION},
+    overview,
+    "skills": skills[],
+    architectureMarkdown
+  }
+`;
+
+const PROJECT_SLUGS_QUERY = `
+  *[_type == "project" && defined(slug.current) && !(_id in path("drafts.**"))].slug.current
+`;
+
+function normalizeProjectSummary(raw: any): ProjectSummary {
+  return {
+    _id: raw._id,
+    slug: raw.slug,
+    title: raw.title ?? "Untitled",
+    excerpt: raw.excerpt ?? "",
+    dates: raw.dates ?? "",
+    active: Boolean(raw.active),
+    coverImageUrl: raw.coverImageUrl ?? undefined,
+    technologies: Array.isArray(raw.technologies) ? raw.technologies.filter(Boolean) : [],
+    githubUrl: raw.githubUrl ?? undefined,
+    websiteUrl: raw.websiteUrl ?? undefined,
+    order: typeof raw.order === "number" ? raw.order : undefined,
+  };
+}
+
+export async function getProjects(limit = 50): Promise<ProjectSummary[]> {
+  if (!process.env.SANITY_PROJECT_ID) return [];
+  const raw = await sanityClient.fetch(PROJECTS_LIST_QUERY, {});
+  if (!Array.isArray(raw)) return [];
+  return raw.map(normalizeProjectSummary).slice(0, limit);
+}
+
+export async function getProjectBySlug(slug: string): Promise<ProjectFull | null> {
+  if (!process.env.SANITY_PROJECT_ID) return null;
+  const raw = await sanityClient.fetch(PROJECT_BY_SLUG_QUERY, { slug });
+  if (!raw) return null;
+  return {
+    ...normalizeProjectSummary(raw),
+    overview: raw.overview ?? "",
+    skills: Array.isArray(raw.skills) ? raw.skills.filter(Boolean) : [],
+    architectureMarkdown: raw.architectureMarkdown ?? "",
+  };
+}
+
+export async function getAllProjectSlugs(): Promise<string[]> {
+  if (!process.env.SANITY_PROJECT_ID) return [];
+  const slugs = await sanityClient.fetch(PROJECT_SLUGS_QUERY, {});
+  return Array.isArray(slugs) ? slugs.filter(Boolean) : [];
 }
