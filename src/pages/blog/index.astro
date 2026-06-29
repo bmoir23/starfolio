@@ -6,13 +6,13 @@ import { DATA } from "@/data/resume";
 
 export const prerender = false;
 
-const configured = isSanityConfigured();
+const configured = isSanityConfigured(Astro.locals);
 let posts: BlogCardPost[] = [];
 let fetchError: string | null = null;
 
 if (configured) {
   try {
-    posts = await getPosts(50);
+    posts = await getPosts(Astro.locals, 50);
   } catch (e) {
     fetchError = e instanceof Error ? e.message : "Failed to fetch posts";
   }

@@ -3,11 +3,11 @@ import { getProjects, isSanityConfigured } from "@/lib/sanity";
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   const limitParam = url.searchParams.get("limit");
   const limit = limitParam ? Math.min(50, Math.max(1, Number(limitParam) || 10)) : 50;
 
-  const configured = isSanityConfigured();
+  const configured = isSanityConfigured(locals);
   if (!configured) {
     return new Response(
       JSON.stringify({ projects: [], configured: false }),
@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ url }) => {
   }
 
   try {
-    const projects = await getProjects(limit);
+    const projects = await getProjects(locals, limit);
     return new Response(
       JSON.stringify({ projects, configured: true }),
       {

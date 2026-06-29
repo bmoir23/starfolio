@@ -15,13 +15,13 @@ if (!slug) {
   return Astro.redirect("/projects");
 }
 
-const configured = isSanityConfigured();
+const configured = isSanityConfigured(Astro.locals);
 
 if (!configured) {
   return Astro.redirect("/projects");
 }
 
-const project = await getProjectBySlug(slug);
+const project = await getProjectBySlug(Astro.locals, slug);
 
 if (!project) {
   return Astro.redirect("/projects");

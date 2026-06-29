@@ -1,9 +1,10 @@
-import { createClient } from "@sanity/client";
+import { createClient, type SanityClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { getEnv } from "@/lib/runtime-env";
 
 /**
- * Sanity client for fetching blog content.
+ * Sanity client for fetching blog/project content.
  *
  * Required env vars (see `.env.example`):
  *   - SANITY_PROJECT_ID
@@ -11,26 +12,55 @@ import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
  *   - SANITY_API_VERSION    (default: "2024-10-01")
  *   - SANITY_API_TOKEN      (optional — only needed for private datasets)
  *
- * On Cloudflare, these are read from the local `.dev.vars` file during
- * `astro dev` / `wrangler` and from the project's secret bindings in prod.
+ * On Cloudflare these live on the runtime env binding — `Astro.locals.runtime.env`
+ * (populated from `.dev.vars` during `astro dev` / `wrangler`, and from the
+ * project's secret bindings in prod). They are NOT on `process.env`, so the
+ * client must be created lazily per request with `locals` threaded in. Creating
+ * it eagerly at module load with an empty `projectId` makes `@sanity/client`
+ * throw "Configuration must contain `projectId`" and 500s every route.
  */
-export const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID ?? "",
-  dataset: process.env.SANITY_DATASET ?? "production",
-  apiVersion: process.env.SANITY_API_VERSION ?? "2024-10-01",
-  useCdn: true,
-  token: process.env.SANITY_API_TOKEN,
-  perspective: "published",
-});
-
-const builder = imageUrlBuilder(sanityClient);
-
-export function urlFor(source: SanityImageSource) {
-  return builder.image(source).auto("format").fit("max").width(1200);
+function sanityEnv(locals: unknown, key: string): string | undefined {
+  const fromRuntime = getEnv(locals, key);
+  if (fromRuntime) return fromRuntime;
+  const fromImport = (import.meta.env as Record<string, string | undefined>)[key];
+  return fromImport && fromImport.length > 0 ? fromImport : undefined;
 }
 
-export function urlForSquare(source: SanityImageSource, size = 600) {
-  return builder.image(source).auto("format").fit("crop").width(size).height(size);
+let cachedClient: SanityClient | null = null;
+let cachedProjectId: string | null = null;
+
+export function getSanityClient(locals: unknown): SanityClient | null {
+  const projectId = sanityEnv(locals, "SANITY_PROJECT_ID");
+  if (!projectId) return null;
+  if (cachedClient && cachedProjectId === projectId) return cachedClient;
+
+  cachedClient = createClient({
+    projectId,
+    dataset: sanityEnv(locals, "SANITY_DATASET") ?? "production",
+    apiVersion: sanityEnv(locals, "SANITY_API_VERSION") ?? "2024-10-01",
+    useCdn: true,
+    token: sanityEnv(locals, "SANITY_API_TOKEN"),
+    perspective: "published",
+  });
+  cachedProjectId = projectId;
+  return cachedClient;
+}
+
+export function urlFor(locals: unknown, source: SanityImageSource) {
+  const client = getSanityClient(locals);
+  if (!client) return null;
+  return imageUrlBuilder(client).image(source).auto("format").fit("max").width(1200);
+}
+
+export function urlForSquare(locals: unknown, source: SanityImageSource, size = 600) {
+  const client = getSanityClient(locals);
+  if (!client) return null;
+  return imageUrlBuilder(client)
+    .image(source)
+    .auto("format")
+    .fit("crop")
+    .width(size)
+    .height(size);
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -116,16 +146,21 @@ function normalizeSummary(raw: any): BlogPostSummary {
   };
 }
 
-export async function getPosts(limit = 20): Promise<BlogPostSummary[]> {
-  if (!process.env.SANITY_PROJECT_ID) return [];
-  const raw = await sanityClient.fetch(POSTS_LIST_QUERY, {});
+export async function getPosts(locals: unknown, limit = 20): Promise<BlogPostSummary[]> {
+  const client = getSanityClient(locals);
+  if (!client) return [];
+  const raw = await client.fetch(POSTS_LIST_QUERY, {});
   if (!Array.isArray(raw)) return [];
   return raw.map(normalizeSummary).slice(0, limit);
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPostFull | null> {
-  if (!process.env.SANITY_PROJECT_ID) return null;
-  const raw = await sanityClient.fetch(POST_BY_SLUG_QUERY, { slug });
+export async function getPostBySlug(
+  locals: unknown,
+  slug: string,
+): Promise<BlogPostFull | null> {
+  const client = getSanityClient(locals);
+  if (!client) return null;
+  const raw = await client.fetch(POST_BY_SLUG_QUERY, { slug });
   if (!raw) return null;
   return {
     ...normalizeSummary(raw),
@@ -136,14 +171,15 @@ export async function getPostBySlug(slug: string): Promise<BlogPostFull | null> 
   };
 }
 
-export async function getAllSlugs(): Promise<string[]> {
-  if (!process.env.SANITY_PROJECT_ID) return [];
-  const slugs = await sanityClient.fetch(SLUGS_QUERY, {});
+export async function getAllSlugs(locals: unknown): Promise<string[]> {
+  const client = getSanityClient(locals);
+  if (!client) return [];
+  const slugs = await client.fetch(SLUGS_QUERY, {});
   return Array.isArray(slugs) ? slugs.filter(Boolean) : [];
 }
 
-export function isSanityConfigured(): boolean {
-  return Boolean(process.env.SANITY_PROJECT_ID);
+export function isSanityConfigured(locals: unknown): boolean {
+  return Boolean(sanityEnv(locals, "SANITY_PROJECT_ID"));
 }
 
 // ─── Projects ───────────────────────────────────────────────────────────────
@@ -198,16 +234,21 @@ function normalizeProjectSummary(raw: any): ProjectSummary {
   };
 }
 
-export async function getProjects(limit = 50): Promise<ProjectSummary[]> {
-  if (!process.env.SANITY_PROJECT_ID) return [];
-  const raw = await sanityClient.fetch(PROJECTS_LIST_QUERY, {});
+export async function getProjects(locals: unknown, limit = 50): Promise<ProjectSummary[]> {
+  const client = getSanityClient(locals);
+  if (!client) return [];
+  const raw = await client.fetch(PROJECTS_LIST_QUERY, {});
   if (!Array.isArray(raw)) return [];
   return raw.map(normalizeProjectSummary).slice(0, limit);
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectFull | null> {
-  if (!process.env.SANITY_PROJECT_ID) return null;
-  const raw = await sanityClient.fetch(PROJECT_BY_SLUG_QUERY, { slug });
+export async function getProjectBySlug(
+  locals: unknown,
+  slug: string,
+): Promise<ProjectFull | null> {
+  const client = getSanityClient(locals);
+  if (!client) return null;
+  const raw = await client.fetch(PROJECT_BY_SLUG_QUERY, { slug });
   if (!raw) return null;
   return {
     ...normalizeProjectSummary(raw),
@@ -217,8 +258,9 @@ export async function getProjectBySlug(slug: string): Promise<ProjectFull | null
   };
 }
 
-export async function getAllProjectSlugs(): Promise<string[]> {
-  if (!process.env.SANITY_PROJECT_ID) return [];
-  const slugs = await sanityClient.fetch(PROJECT_SLUGS_QUERY, {});
+export async function getAllProjectSlugs(locals: unknown): Promise<string[]> {
+  const client = getSanityClient(locals);
+  if (!client) return [];
+  const slugs = await client.fetch(PROJECT_SLUGS_QUERY, {});
   return Array.isArray(slugs) ? slugs.filter(Boolean) : [];
 }

@@ -14,13 +14,13 @@ if (!slug) {
   return Astro.redirect("/blog");
 }
 
-const configured = isSanityConfigured();
+const configured = isSanityConfigured(Astro.locals);
 
 if (!configured) {
   return Astro.redirect("/blog");
 }
 
-const post = await getPostBySlug(slug);
+const post = await getPostBySlug(Astro.locals, slug);
 
 if (!post) {
   return Astro.redirect("/blog");

@@ -3,11 +3,11 @@ import { getPosts, isSanityConfigured } from "@/lib/sanity";
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   const limitParam = url.searchParams.get("limit");
   const limit = limitParam ? Math.min(50, Math.max(1, Number(limitParam) || 10)) : 10;
 
-  const configured = isSanityConfigured();
+  const configured = isSanityConfigured(locals);
   if (!configured) {
     return new Response(
       JSON.stringify({ posts: [], configured: false }),
@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ url }) => {
   }
 
   try {
-    const posts = await getPosts(limit);
+    const posts = await getPosts(locals, limit);
     return new Response(
       JSON.stringify({ posts, configured: true }),
       {

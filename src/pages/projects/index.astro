@@ -7,13 +7,13 @@ import type { ProjectSummary } from "@/lib/sanity";
 
 export const prerender = false;
 
-const configured = isSanityConfigured();
+const configured = isSanityConfigured(Astro.locals);
 let projects: ProjectSummary[] = [];
 let fetchError: string | null = null;
 
 if (configured) {
   try {
-    projects = await getProjects(50);
+    projects = await getProjects(Astro.locals, 50);
   } catch (e) {
     fetchError = e instanceof Error ? e.message : "Failed to fetch projects";
   }
