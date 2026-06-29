@@ -10,6 +10,7 @@ const BLUR_FADE_DELAY = 0.04;
 type ProjectsResponse = {
   projects: ProjectSummary[];
   configured: boolean;
+  error?: string;
 };
 
 export default function ProjectsSection() {
@@ -30,6 +31,7 @@ export default function ProjectsSection() {
       .then((data) => {
         if (cancelled) return;
         setState(data);
+        if (data.error) setError(true);
         setIsLoading(false);
       })
       .catch(() => {
@@ -81,6 +83,8 @@ export default function ProjectsSection() {
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
               {!state.configured
                 ? "Connect Sanity to publish projects. See BLOG.md in the repo for setup steps."
+                : error
+                ? "Something went wrong loading projects. Please try again later."
                 : "No projects yet. Check back soon — I'll be showcasing the AI platforms and pipelines I've built here."}
             </p>
           </div>
