@@ -12,7 +12,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "generate-types": "wrangler types"
+    "generate-types": "wrangler types",
+    "seed:sanity": "node scripts/seed-sanity.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.3.0",

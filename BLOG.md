@@ -21,8 +21,8 @@ cp .env.example .dev.vars
 Then fill in:
 
 ```
-SANITY_PROJECT_ID=your_project_id
-SANITY_DATASET=production
+SANITY_PROJECT_ID=cv6an3n5
+SANITY_DATASET=portoflio-dev-blog
 SANITY_API_VERSION=2024-10-01
 SANITY_API_TOKEN=optional_read_token
 ```
@@ -32,16 +32,29 @@ Cloudflare Pages/Workers project dashboard (or via `wrangler secret put`).
 
 ## 3. Set up the Sanity Studio
 
-The schema for the `post` document lives in [`sanity/schemas/post.ts`](./sanity/schemas/post.ts).
+The canonical schemas live in [`sanity/schemas/`](./sanity/schemas/) (`post.ts` +
+`project.ts`). The deployed studio is in
+[`bmoir-dev-portfolio/`](./bmoir-dev-portfolio/) and is already wired to:
 
-Either:
+| Setting | Value |
+| --- | --- |
+| Project ID | `cv6an3n5` |
+| Dataset | `portoflio-dev-blog` |
 
-- **Use an existing studio** — drop `sanity/schemas/post.ts` into your studio's
-  `schemas/` folder and register it in `sanity.config.ts`.
-- **Create a new studio** — run `npm create sanity@latest` in a sibling folder
-  (e.g. `../blog-studio`), copy the schema file in, and run `sanity deploy`.
+From the studio folder:
 
-Required fields: `title`, `slug`, `publishedAt`. Recommended: `excerpt`,
+```bash
+cd bmoir-dev-portfolio
+pnpm install
+pnpm dev          # local studio at http://localhost:3333
+pnpm deploy       # deploy hosted studio (after `sanity login`)
+```
+
+Register schemas in `bmoir-dev-portfolio/schemaTypes/index.ts` — the studio
+imports `project` from `sanity/schemas/project.ts` and uses the local `post`
+and `author` types that match the portfolio app.
+
+Required post fields: `title`, `slug`, `publishedAt`. Recommended: `excerpt`,
 `bodyMarkdown` (Markdown), `coverImage`, `tags`.
 
 ## 4. What gets rendered
@@ -84,12 +97,24 @@ Fields: `title`, `slug` (required); `excerpt`, `overview` (Markdown), `dates`,
 
 ## 2. Seed the starter content (optional)
 
-Four starter projects are provided in
-[`sanity/seed/projects.ndjson`](./sanity/seed/projects.ndjson). Import them into
-your dataset from your studio folder:
+Starter projects are in
+[`sanity/seed/projects.ndjson`](./sanity/seed/projects.ndjson). A sample blog
+post is in [`sanity/seed/posts.ndjson`](./sanity/seed/posts.ndjson). Import
+from the studio folder (requires `sanity login`):
 
 ```bash
-sanity dataset import /path/to/starfolio-1/sanity/seed/projects.ndjson production
+cd bmoir-dev-portfolio
+pnpm seed              # imports projects + sample post
+# or individually:
+pnpm seed:projects
+pnpm seed:posts
+```
+
+Equivalent manual command:
+
+```bash
+sanity dataset import ../sanity/seed/projects.ndjson portoflio-dev-blog --replace
+sanity dataset import ../sanity/seed/posts.ndjson portoflio-dev-blog --replace
 ```
 
 Then edit each document in the Studio — in particular fill in the
