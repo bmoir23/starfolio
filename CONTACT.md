@@ -92,12 +92,13 @@ official inline script — no extra npm dependency required.
 
 ## 3. Chatbot shell (placeholder)
 
-`src/components/ChatbotWidget.tsx` is mounted in `Layout.astro` via
-`client:idle`. The input and send button are intentionally disabled.
+The chatbot is a `src/components/ChatbotPanel.tsx` panel that is toggled from a
+button in the floating navbar (`src/components/navbar.tsx`). The input and send
+button are intentionally disabled while the n8n backend is being built.
 
 To connect it to n8n later:
 
 1. Expose an n8n webhook (or a Worker route) that accepts `{ message }` and
    returns the assistant reply.
-2. In `ChatbotWidget.tsx`, replace the no-op `handleSend` with a `fetch` to that
+2. In `ChatbotPanel.tsx`, replace the no-op `handleSend` with a `fetch` to that
    endpoint, move `messages` into real state, and remove the `disabled` flags.

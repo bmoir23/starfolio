@@ -3,7 +3,6 @@ import "../styles/global.css";
 import { DATA } from "@/data/resume";
 import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
-import ChatbotWidget from "@/components/ChatbotWidget";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import PostHog from "@/components/posthog.astro";
 
@@ -162,11 +161,8 @@ const { baseFontSize } = CONFIG.typography;
       <slot />
     </div>
 
-    <!-- Navbar: ThemeProvider + TooltipProvider + Navbar all in one React island -->
+    <!-- Navbar: ThemeProvider + TooltipProvider + Navbar + chat button all in one React island -->
     <NavbarIsland client:load />
-
-    <!-- Chatbot shell (placeholder UI; n8n logic connected later) -->
-    <ChatbotWidget client:idle />
 
     <!-- Cloudflare Web Analytics -->
     <script

@@ -1,5 +1,5 @@
 {
-  "name": "bmoir-dev-portfolio",
+  "name": "starfolio-studio",
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
@@ -7,12 +7,11 @@
   "scripts": {
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
     "start": "sanity start",
-    "seed:projects": "sanity dataset import ../sanity/seed/projects.ndjson --dataset portoflio-dev-blog --replace",
-    "seed:posts": "sanity dataset import ../sanity/seed/posts.ndjson --dataset portoflio-dev-blog --replace",
-    "seed": "pnpm seed:projects && pnpm seed:posts"
+    "seed": "pnpm seed:projects && pnpm seed:posts",
+    "seed:projects": "sanity dataset import seed/projects.ndjson --dataset portoflio-dev-blog --replace",
+    "seed:posts": "sanity dataset import seed/posts.ndjson --dataset portoflio-dev-blog --replace"
   },
   "keywords": [
     "sanity"
